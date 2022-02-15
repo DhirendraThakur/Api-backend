@@ -23,7 +23,7 @@ if (customerData!=null){
 const password = req.body.password;
 const address = req.body.address;
 const phone = req.body.phone;
-const uimage = req.body.phone
+//const uimage = req.body.phone
 
 bcryptjs.hash(password,10, function(e, hashed_value){
     const data = new Customer({
