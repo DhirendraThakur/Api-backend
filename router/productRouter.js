@@ -1,34 +1,36 @@
 const express = require ("express");
 const Product = require("../models/productModel");
-const upload = require("../upload/image");
-
 //const auth = require("../auth/auth");
 const auth = require("../auth/auth")
 const router = new express.Router();
+const upload = require ("../upload/image");
 
-
-router.post("/product/add", auth.verifyCustomer, function(req,res){
+router.post("/product/add", auth.verifyCustomer, upload.single('product_image'), function(req,res){
 
     //console.log(req.body)
 
     const productname = req.body.productname;
     const producttype = req.body.producttype;
-    const pimage = req.body.pimage;
+    const productprice = req.body.productprice;
+    const pimage = req.file.filename;
     const userid = req.customerInfo_id;
 
     const data = new Product({
         productname:productname,
         producttype : producttype,
-        //pimage: pimage,
-        userid:userid,
-    })
+        productprice : productprice,
+        pimage : pimage,
+        userid : userid,
+        
+    });
 
+    
     data.save()
     .then(function(){
-        res.send({message:'success'});
+        res.json({message:'Product Inserted', success: true});
     })
     .catch(function(e){
-        res.send(e)
+        res.json({message:"somethings went wrong!"})
     });
     
 
@@ -40,7 +42,8 @@ router.put('/product/update', auth.verifyCustomer, function(req,res){
     const pid = req.body.pid;
     const productname = req.body.productname;
     const producttype = req.body.producttype;
-    Product.updateOne({_id : pid},{productname:productname, producttype: producttype})
+    const productprice = req.body.productprice;
+    Product.updateOne({_id : pid},{productname:productname, producttype: producttype, productprice: productprice})
     .then(function(){
         res.json({message:"product updated"})
     })
@@ -49,9 +52,9 @@ router.put('/product/update', auth.verifyCustomer, function(req,res){
     })
 })
 // to delete poduct
-router.delete('product/delete', auth.verifyCustomer, function(req,res){
-    const pid = req.body.pid;
-    Product.deleteOne({_id:pid})
+router.delete('product/delete/:pid', auth.verifyCustomer, function(req,res){
+    const pid = req.params.pid;
+    Product.deleteOne({_id : pid, userid : userid})
     .then(function(){
         res.json({message: "Deleted"})
     })
@@ -71,14 +74,16 @@ router.get('/product/all',function(req,res){
     })
 })
  // to view product of logged in user
- router.get('product/logged', auth.verifyCustomer, function(req,res){
-    const userid = req.customerInfo._id
-    Product.find()
-     .then(function(){
+ router.get('/product/logged', auth.verifyCustomer, function(req,res){
+    const userid = req.customerInfo_id
+    Product.find({userid :userid})
+     .then(function(result){
         res.json(result)
     })
     .catch(function(){
         res.json({message: "something went wrong"})
     })
  })
+
+ 
 module.exports= router;
