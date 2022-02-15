@@ -8,6 +8,7 @@ module.exports.verifyCustomer = (req,res,next)=>{
         const cData = jwt.verify(token,"anysecretkey");
         customer.findOne({_id : cData.custid})
         .then((customerData)=>{
+         // console.log(customerData);
           req.customerInfo=customerData;
           next();   
         })
