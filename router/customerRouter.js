@@ -71,21 +71,22 @@ router.post("/customer/login", function(req,res){
     } )
     })
     // comparing password between tha password provided by client and password in db
-    
-
+    /// Updateing user profile/////
 })
-router.put("/customer/profile/update", function(req,res){
+router.put("/customer/profile/update", auth.verifyCustomer, function(req,res){
 const cid = req.customerInfo._id;
-
+const username= req.body.username;
+const password = req.body.password;
+const address = req.body.address;
 const phone = req.body.phone;
 
-Customer.updateOne({_id:custId},{phone:phone}).then(function(){
+
+Customer.updateOne({_id:cid},{username:username,phone:phone, address:address, password:password}).then(function(){
     res.json({msg: "profile updated"})
 }).catch(function(){
 
     res.json({msg: "Something went wrong. Please try again"})
 });
-
 
 })
 
@@ -124,14 +125,29 @@ router.post("/product/upload", upload.single('myimage'), function(req,res){
     })
     imagedata.save();
 })
+
+
+// preview profile of logginuser
 router.get('/profile/view', auth.verifyCustomer, function(req,res){
     const userid = req.customerInfo._id;
-    Customer.find()
+    Customer.find({userid:userid})
     .then(function(data){
         res.json(data)
     })
     .catch(function(){
         res.json({message: "somethings went wrong"})
+    })
+})
+
+// display loged user at a time
+router.get('/profile/one', auth.verifyCustomer, function(req, res){
+    const userid = req.customerInfo_id
+    Customer.findOne({userid:userid})
+    .then(function(){
+        res.json(result)
+    })
+    .catch(function(){
+        res.json({message: "something went wrong"})
     })
 })
 module.exports= router;
