@@ -1,14 +1,10 @@
 const express = require ("express");
 const Product = require("../models/productModel");
-//const auth = require("../auth/auth");
 const auth = require("../auth/auth")
 const router = new express.Router();
 const upload = require ("../upload/image");
 
 router.post("/product/add", auth.verifyCustomer, upload.single('product_image'), function(req,res){
-
-    //console.log(req.body)
-
     const productname = req.body.productname;
     const producttype = req.body.producttype;
     const productprice = req.body.productprice;
@@ -20,11 +16,8 @@ router.post("/product/add", auth.verifyCustomer, upload.single('product_image'),
         producttype : producttype,
         productprice : productprice,
         pimage : pimage,
-        userid : userid,
-        
-    });
-
-    
+        userid : userid,        
+    });   
     data.save()
     .then(function(){
         res.json({message:'Product Inserted', success: true});
@@ -32,8 +25,6 @@ router.post("/product/add", auth.verifyCustomer, upload.single('product_image'),
     .catch(function(e){
         res.json({message:"somethings went wrong!"})
     });
-    
-
 })
 
 // to update product
@@ -85,5 +76,21 @@ router.get('/product/all',function(req,res){
     })
  })
 
+ 
+
+ // showing supplent 1 at a time
+router.get('/product/one/:pid', auth.verifyCustomer, function(req,res){
+    const pid = req.params.pid;
+    Product.findOne({_id: pid})
+
+    .then (function(result){
+        res.json(result)
+    })
+    .catch(function(){
+        res.json({message: 'Somethings went wrong'})
+    })
+
+
+})
  
 module.exports= router;
