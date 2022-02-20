@@ -47,7 +47,8 @@ data.save()
 })
 
 // login route for customer
-router.post("/customer/login", function(req,res){
+router.post("/customer/login", function (req, res) {
+    console.log("hit")
     const username = req.body.username;
     Customer.findOne({username:username})
     .then (function(customerData){
