@@ -42,6 +42,7 @@ router.put('/product/update', auth.verifyCustomer, function(req,res){
         res.json({message: "Somethings went worng!"})
     })
 })
+
 // to delete poduct
 router.delete('product/delete/:pid', auth.verifyCustomer, function(req,res){
     const pid = req.params.pid;
