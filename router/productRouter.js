@@ -4,32 +4,64 @@ const auth = require("../auth/auth");
 const router = new express.Router();
 const upload = require("../upload/image");
 
-router.post(
-  "/product/add",
-  auth.verifyCustomer,
-  upload.single("product_image"),
-  function (req, res) {
-    const productname = req.body.productname;
-    const producttype = req.body.producttype;
-    const productprice = req.body.productprice;
-    const pimage = req.file.filename;
-    const userid = req.customerInfo_id;
+router.post("/product/add", auth.verifyCustomer, function (req, res) {
+  const productname = req.body.productname;
+  const producttype = req.body.producttype;
+  const productprice = req.body.productprice;
+  const userid = req.customerInfo._id;
+  const pimage = null;
 
-    const data = new Product({
-      productname: productname,
-      producttype: producttype,
-      productprice: productprice,
-      pimage: pimage,
-      userid: userid,
+  const data = new Product({
+    productname: productname,
+    producttype: producttype,
+    productprice: productprice,
+    pimage: pimage,
+    userid: userid,
+  });
+  data
+    .save()
+    .then(function () {
+      res.json({ message: "Product Inserted", success: true });
+    })
+    .catch(function (e) {
+      console.log(e);
+      res.json({ message: "somethings went wrong!" });
     });
-    data
-      .save()
-      .then(function () {
-        res.json({ message: "Product Inserted", success: true });
-      })
-      .catch(function (e) {
-        res.json({ message: "somethings went wrong!" });
+});
+
+// to upload image
+router.put(
+  "/product/:product_id/photo/upload",
+  auth.verifyCustomer,
+  (req, res) => {
+    console.log("upload");
+    product_id = req.params.product_id;
+    filename = req.file.originalname;
+    const tempPath = req.file.path;
+    const targetPath = path.join(__dirname, "./uploads/" + filename);
+
+    file_ext = path.extname(filename).toLowerCase();
+
+    if (file_ext === ".png" || file_ext === ".jpg" || file_ext === ".jpeg") {
+      fs.rename(tempPath, targetPath, (err) => {
+        if (err) return handleError(err, res);
+        Product.updateOne(
+          { _id: pid },
+          {
+            pimage: targetPath,
+          }
+        );
+        res.status(200).contentType("text/plain").end("File uploaded!");
       });
+    } else {
+      fs.unlink(tempPath, (err) => {
+        if (err) return handleError(err, res);
+        res
+          .status(403)
+          .contentType("text/plain")
+          .end("Only .png/.jpg/.jpeg files are allowed!");
+      });
+    }
   }
 );
 
