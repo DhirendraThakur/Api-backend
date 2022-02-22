@@ -87,18 +87,18 @@ router.put("/product/update", auth.verifyCustomer, function (req, res) {
       res.json({ message: "Somethings went worng!" });
     });
 });
-// TODO - need to fix
+
 // to delete poduct
-// router.delete('product/delete/'+pid, auth.verifyCustomer, function(req,res){
-//     const pid = req.params.pid;
-//     Product.deleteOne({_id : pid, userid : userid})
-//     .then(function(){
-//         res.json({message: "Deleted"})
-//     })
-//     .then(function(){
-//         res.json({message: "Somethings went wrong"})
-//     })
-// })
+router.delete('product/delete/:pid', auth.verifyCustomer, function(req,res){
+    const pid = req.params.pid;
+    Product.deleteOne({_id : pid, userid : userid})
+    .then(function(){
+        res.json({message: "Deleted"})
+    })
+    .then(function(){
+        res.json({message: "Somethings went wrong"})
+    })
+})
 
 // to view all products
 router.get("/product/all", auth.verifyCustomer, function (req, res) {
@@ -129,6 +129,14 @@ router.get("/product/one/:pid", auth.verifyCustomer, function (req, res) {
 
     .then(function (result) {
       res.json(result);
+    })
+    .catch(function () {
+      res.json({ message: "Somethings went wrong" });
+    });
+});
+
+module.exports = router;
+ult);
     })
     .catch(function () {
       res.json({ message: "Somethings went wrong" });
