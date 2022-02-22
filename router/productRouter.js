@@ -136,11 +136,3 @@ router.get("/product/one/:pid", auth.verifyCustomer, function (req, res) {
 });
 
 module.exports = router;
-ult);
-    })
-    .catch(function () {
-      res.json({ message: "Somethings went wrong" });
-    });
-});
-
-module.exports = router;
