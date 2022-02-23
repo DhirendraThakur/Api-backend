@@ -89,22 +89,25 @@ router.put("/product/update", auth.verifyCustomer, function (req, res) {
 });
 
 // to delete poduct
-router.delete('product/delete/:pid', auth.verifyCustomer, function(req,res){
-    const pid = req.params.pid;
-    Product.deleteOne({_id : pid, userid : userid})
-    .then(function(){
-        res.json({message: "Deleted"})
+router.delete("product/delete/:pid", auth.verifyCustomer, function (req, res) {
+  const pid = req.params.pid;
+  Product.deleteOne({ _id: pid, userid: userid })
+    .then(function () {
+      res.json({ message: "Deleted" });
     })
-    .then(function(){
-        res.json({message: "Somethings went wrong"})
-    })
-})
+    .then(function () {
+      res.json({ message: "Somethings went wrong" });
+    });
+});
 
 // to view all products
 router.get("/product/all", auth.verifyCustomer, function (req, res) {
   Product.find({})
     .then((data) => {
-      res.json(data);
+      res.json({
+        success: true,
+        data: data,
+      });
     })
     .catch((err) => {
       res.json({ message: "Something went wrong" });
