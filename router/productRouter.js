@@ -20,8 +20,9 @@ router.post("/product/add", auth.verifyCustomer, function (req, res) {
   });
   data
     .save()
-    .then(function () {
-      res.json({ message: "Product Inserted", success: true });
+    .then(function (ele) {
+      delete ele.__v;
+      res.json({ message: "Product Inserted", success: true, data: ele });
     })
     .catch(function (e) {
       console.log(e);
@@ -89,15 +90,21 @@ router.put("/product/update", auth.verifyCustomer, function (req, res) {
 });
 
 // to delete poduct
-router.delete("product/delete/:pid", auth.verifyCustomer, function (req, res) {
+router.delete("/product/delete/:pid", auth.verifyCustomer, function (req, res) {
   const pid = req.params.pid;
-  Product.deleteOne({ _id: pid, userid: userid })
-    .then(function () {
-      res.json({ message: "Deleted" });
-    })
-    .then(function () {
-      res.json({ message: "Somethings went wrong" });
-    });
+  console.log(pid);
+  try {
+    Product.deleteOne({ _id: pid })
+      .then(function () {
+        res.json({ message: "Deleted" });
+      })
+      .catch(function () {
+        res.json({ message: "Somethings went wrong" }).status(400);
+      });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Somethings went wrong" }).status(500);
+  }
 });
 
 // to view all products
@@ -128,14 +135,19 @@ router.get("/product/logged", auth.verifyCustomer, function (req, res) {
 // showing supplent 1 at a time
 router.get("/product/one/:pid", auth.verifyCustomer, function (req, res) {
   const pid = req.params.pid;
-  Product.findOne({ _id: pid })
+  try {
+    Product.findOne({ _id: pid })
 
-    .then(function (result) {
-      res.json(result);
-    })
-    .catch(function () {
-      res.json({ message: "Somethings went wrong" });
-    });
+      .then(function (result) {
+        res.json(result);
+      })
+      .catch(function () {
+        res.json({ message: "Somethings went wrong" }).status(400);
+      });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Somethings went wrong" }).status(500);
+  }
 });
 
 module.exports = router;

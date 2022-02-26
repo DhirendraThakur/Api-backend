@@ -15,7 +15,6 @@ module.exports.verifyCustomer = (req, res, next) => {
         return;
       }
       req.customerInfo = customerData;
-      uid = cData.custId;
       next();
     });
   } catch (e) {
