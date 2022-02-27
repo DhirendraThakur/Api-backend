@@ -31,40 +31,35 @@ router.post("/product/add", auth.verifyCustomer, function (req, res) {
 });
 
 // to upload image
-router.put(
-  "/product/:product_id/photo/upload",
-  auth.verifyCustomer,
-  (req, res) => {
-    console.log("upload");
-    product_id = req.params.product_id;
-    filename = req.file.originalname;
-    const tempPath = req.file.path;
-    const targetPath = path.join(__dirname, "./uploads/" + filename);
+router.put("/product/:product_id/upload", auth.verifyCustomer, (req, res) => {
+  product_id = req.params.product_id;
+  filename = req.file.originalname;
+  const tempPath = req.file.path;
+  const targetPath = path.join(__dirname, "./uploads/" + filename);
 
-    file_ext = path.extname(filename).toLowerCase();
+  file_ext = path.extname(filename).toLowerCase();
 
-    if (file_ext === ".png" || file_ext === ".jpg" || file_ext === ".jpeg") {
-      fs.rename(tempPath, targetPath, (err) => {
-        if (err) return handleError(err, res);
-        Product.updateOne(
-          { _id: pid },
-          {
-            pimage: targetPath,
-          }
-        );
-        res.status(200).contentType("text/plain").end("File uploaded!");
-      });
-    } else {
-      fs.unlink(tempPath, (err) => {
-        if (err) return handleError(err, res);
-        res
-          .status(403)
-          .contentType("text/plain")
-          .end("Only .png/.jpg/.jpeg files are allowed!");
-      });
-    }
+  if (file_ext === ".png" || file_ext === ".jpg" || file_ext === ".jpeg") {
+    fs.rename(tempPath, targetPath, (err) => {
+      if (err) return handleError(err, res);
+      Product.updateOne(
+        { _id: pid },
+        {
+          pimage: targetPath,
+        }
+      );
+      res.status(200).contentType("text/plain").end("File uploaded!");
+    });
+  } else {
+    fs.unlink(tempPath, (err) => {
+      if (err) return handleError(err, res);
+      res
+        .status(403)
+        .contentType("text/plain")
+        .end("Only .png/.jpg/.jpeg files are allowed!");
+    });
   }
-);
+});
 
 // to update product
 
